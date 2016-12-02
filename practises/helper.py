@@ -1,5 +1,7 @@
+# -*- coding: UTF-8 -*-
 from dateutil.parser import parse
 from datetime import datetime
+import numpy as np
 
 
 def getData():
@@ -12,3 +14,40 @@ def getData():
         return [{'date': parse(data[0]), 'open': float(data[1]), 'high': float(data[2]), 'low': float(data[3]),
                  'close': float(data[4])} for data in
                 (i.replace('\t', ',').replace('\r\n', '').split(',') for i in lines)]
+
+
+"""
+设向量v(n) n(1~n)
+1.求一阶差分向量
+  diffv(i)=v(i+1)-v(i) i(1,2,3,...,n-1)
+2.对diffv(i)进行符号函数运算得到Trend
+  if diffv(i)>0:
+    return 1
+  elif diffv(i)<0:
+    return -1
+  else:
+    return 0
+3.reverse Trend
+4.进行如下处理得到R
+  if Trend(i)==0 and Trend(i+1)>=0:
+    Trend(i)=1
+  elif Trend(i)==0 and Trend(i+1)<0:
+    Trend(i)=-1
+  else:
+    Trend(i)=0
+5.最后再对R做一次一阶差分向量.波峰:R(i)=-2,位置i+1,波谷R(i)=2,位置i+1
+"""
+
+
+def getPeackAndTrough(values):
+    def calTrend(value):
+        if value>0:
+            return 1
+        elif value<0:
+            return -1
+        else:
+            return 0
+    diffv = [values[i+1]-values[i] for i in range(len(values)) if i<len(values)-1];
+    trend= [calTrend(v) for v in diffv]
+    print (trend)
+    # diffv=[value[:1]-value for value in values]
