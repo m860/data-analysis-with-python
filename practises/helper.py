@@ -41,13 +41,35 @@ def getData():
 
 def getPeackAndTrough(values):
     def calTrend(value):
-        if value>0:
+        if value > 0:
             return 1
-        elif value<0:
+        elif value < 0:
             return -1
         else:
             return 0
-    diffv = [values[i+1]-values[i] for i in range(len(values)) if i<len(values)-1];
-    trend= [calTrend(v) for v in diffv]
+
+    def calDiffR(value1, value2):
+        if value1 == 0 and value2 >= 0:
+            return 1
+        elif value1 == 0 and value2 < 0:
+            return -1
+        else:
+            return value1
+
+    def findPeackValue(value, index):
+        if value == 2:
+            return ('speack', value)
+        else:
+            return ('trough', value)
+
+    diffv = [values[i + 1] - values[i] for i in range(len(values)) if i < len(values) - 1];
+    print(diffv)
+    trend = [calTrend(v) for v in diffv]
     print (trend)
+    r = [calDiffR(trend[i], trend[i + 1]) for i in range(len(trend) - 1)]
+    print (r)
+    diffr = [r[i + 1] - r[i] for i in range(len(r)) if i < len(r) - 1]
+    values = [i + 1 for i in range(len(diffr)) if diffr[i] == 2 or diffr[i] == -2]
+    print (values)
+    return values
     # diffv=[value[:1]-value for value in values]
