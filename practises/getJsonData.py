@@ -12,4 +12,4 @@ def getJSONData(path='data/SZ#002637.txt'):
                 (i.replace('\t', ',').replace('\r\n', '').split(',') for i in lines)]
 
 
-print (getJSONData())
+print (len(getJSONData()))
