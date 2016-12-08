@@ -6,7 +6,8 @@ import numpy as np
 def ma(ndarr, num=5):
     if not isinstance(ndarr, np.ndarray):
         raise 'parameter ndarr is not a np.ndarray'
-    return [ndarr[index - num:index].mean(dtype=np.float64) for index in np.arange(num, ndarr.size)]
+    return np.append(np.zeros(num),
+                     [ndarr[index - num:index].mean(dtype=np.float64) for index in np.arange(num, ndarr.size)])
 
 
 # 指数平均数
