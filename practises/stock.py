@@ -12,15 +12,21 @@ def ma(ndarr, num=5):
 
 # 指数平均数
 # 一般num取12 or 26
-def ema(ndarr, num=12):
-    a = 2 / (num + 1)
+# a=2/(N+1) N:周期天数
+# EMA(t)=EAM(t-1)+a*(CLOSE(t)-EMA(t-1))
+def ema(ndarr, cycle=12):
+    a = 2 / np.float64((cycle + 1))
+    ema0 = ndarr[0]
 
     def curema(arr):
-        if len(arr) == 1:
-            return arr[0]
-        return a * arr[-1] + (1 - a) * curema(arr[:-1])
+        curlen = len(arr)
+        if curlen == 0:
+            return ema0
+        close = arr[curlen - 1]
+        preema = curema(arr[:-1])
+        return preema + a * (close - preema)
 
-    return np.append(np.zeros(12, dtype=np.float64), [curema(ndarr[:i]) for i in np.arange(num, ndarr.size)])
+    return np.append(ndarr[0], [curema(ndarr[:i + 1]) for i in np.arange(1, ndarr.size)])
 
 
 # 指数平滑移动平均线
