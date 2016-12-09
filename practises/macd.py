@@ -14,11 +14,15 @@ jsonPath = os.path.join('data', '{0}.json'.format(fileName))
 
 jsonData = getJSONData(dataPath)
 
-num = 10
+num = 100
 
-close = [i['close'] for i in jsonData][-num:]
+close = np.array([i['close'] for i in jsonData][-num:], dtype=np.float64)
 
-macd = stock.macd(np.array(close, dtype=np.float64))
+ema12 = stock.ema(close, 12)
+ema26 = stock.ema(close, 26)
+macd = stock.macd(close)
 
 plt.bar(range(num), macd)
+plt.plot(range(num), ema12, 'r-')
+plt.plot(range(num), ema26, 'g-')
 plt.show()
