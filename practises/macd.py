@@ -4,6 +4,7 @@ import os
 from datetime import date, datetime
 import numpy as np
 import stock
+import matplotlib.pyplot as plt
 
 dataPath = 'data/SZ#002637.txt'
 
@@ -13,9 +14,11 @@ jsonPath = os.path.join('data', '{0}.json'.format(fileName))
 
 jsonData = getJSONData(dataPath)
 
-close = [i['close'] for i in jsonData][-100:]
+num = 10
+
+close = [i['close'] for i in jsonData][-num:]
 
 macd = stock.macd(np.array(close, dtype=np.float64))
 
-print(len(close), len(macd))
-print(macd)
+plt.bar(range(num), macd)
+plt.show()

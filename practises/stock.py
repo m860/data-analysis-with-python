@@ -26,14 +26,18 @@ def ema(ndarr, cycle=12):
         preema = curema(arr[:-1])
         return preema + a * (close - preema)
 
-    return np.append(ndarr[0], [curema(ndarr[:i + 1]) for i in np.arange(1, ndarr.size)])
+    return np.array(np.append(ndarr[0], [curema(ndarr[:i + 1]) for i in np.arange(1, ndarr.size)]))
 
 
 # 指数平滑移动平均线
-def macd(ndarr, num=12):
-    emas = ema(ndarr, num)
-    return np.append(np.zeros(num + 1), [emas[i - 1] * (num - 1) / (num + 1) + ndarr[i] * 2 / (num + 1) for i in
-                                         np.arange(num + 1, ndarr.size)])
+def macd(ndarr):
+    ema12 = ema(ndarr, 12)
+
+    ema26 = ema(ndarr, 26)
+    diff = ema12 - ema26
+    dem = ema(diff, 9)
+    osc = diff - dem
+    return osc
 
 
 # 波峰/波谷
