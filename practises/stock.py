@@ -7,7 +7,7 @@ def ma(ndarr, num=5):
     if not isinstance(ndarr, np.ndarray):
         raise 'parameter ndarr is not a np.ndarray'
     return np.append(np.zeros(num),
-                     [ndarr[index - num:index].mean(dtype=np.float64) for index in np.arange(num, ndarr.size)])
+                     [ndarr[index - num + 1:index + 1].mean(dtype=np.float64) for index in np.arange(num, ndarr.size)])
 
 
 # 指数平均数
@@ -17,27 +17,25 @@ def ma(ndarr, num=5):
 def ema(ndarr, cycle=12):
     a = 2 / np.float64((cycle + 1))
     ema0 = ndarr[0]
+    result = np.array([ema0])
 
-    def curema(arr):
-        curlen = len(arr)
-        if curlen == 0:
-            return ema0
-        close = arr[curlen - 1]
-        preema = curema(arr[:-1])
-        return preema + a * (close - preema)
+    def curema(index, value):
+        return result[index - 1] + a * (value - result[index - 1])
 
-    return np.array(np.append(ndarr[0], [curema(ndarr[:i + 1]) for i in np.arange(1, ndarr.size)]))
+    for i in np.arange(1, ndarr.size):
+        result = np.append(result, [curema(i, ndarr[i])])
+
+    return result
 
 
 # 指数平滑移动平均线
 def macd(ndarr):
     ema12 = ema(ndarr, 12)
-
     ema26 = ema(ndarr, 26)
     diff = ema12 - ema26
-    dem = ema(diff, 9)
-    osc = diff - dem
-    return osc
+    dea = ema(diff, 9)
+    osc = diff - dea
+    return (osc * 2, diff, dea)
 
 
 # 波峰/波谷

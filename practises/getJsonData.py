@@ -11,5 +11,3 @@ def getJSONData(path='data/SZ#002637.txt'):
                  'close': float(data[4]), 'volume': float(data[5]), 'volumeAmount': float(data[6])} for data in
                 (i.replace('\t', ',').replace('\r\n', '').split(',') for i in lines)]
 
-
-print (len(getJSONData()))
