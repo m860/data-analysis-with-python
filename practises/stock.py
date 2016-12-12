@@ -38,6 +38,28 @@ def macd(ndarr):
     return (osc * 2, diff, dea)
 
 
+# 计算买入卖出的手续费
+def fee(amount, stampDuty=0.001, transfer=0.006, brokerage=0.00025, type=0):
+    brokerageMoney = amount * brokerage
+    if brokerageMoney < 5:
+        brokerageMoney = 5
+    stampDutyMoney = amount * stampDuty
+    transferMoney = amount * transfer
+    if type == 0:
+        return transferMoney + brokerageMoney
+    else:
+        return stampDutyMoney + transferMoney
+
+
+def diffk(diff):
+    return np.append([0], np.array([diff[i] - diff[i - 1] for i in range(1, diff.size-1)]))
+
+
+def findSalePosition(diff):
+    k = diffk(diff)
+    return [(i,k[i]) for i in range(1, k.size - 1) if k[i] <= 0 and k[i-1]>0]
+
+
 # 波峰/波谷
 def getPeackAndTrough(values):
     def calTrend(value):
