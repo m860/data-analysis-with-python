@@ -79,6 +79,8 @@ def format(fpath, tpath):
 
 
 def ema(ndarr, cycle=12):
+    if ndarr.size <= 0:
+        return np.array([])
     a = 2 / np.float64((cycle + 1))
     ema0 = ndarr[0]
     result = np.array([ema0])
@@ -119,8 +121,13 @@ class Stock:
                 if self.items[i + 1]['macd'] >= 0 and self.items[i]['macd'] < 0]
 
     def canBeEnter(self):
+        if len(self.items) <= 0:
+            return False
         lastest = self.items[-1]
-        if lastest['macd'] >= 0 and lastest['diffv'] >= 1:
+        # macd>0 说明是多头
+        # diffv>0 说明还在上升期
+        # volume>0 说明没有停牌
+        if lastest['macd'] >= 0 and lastest['diffv'] >= 0 and lastest['volume']>0:
             return True
         return False
 
