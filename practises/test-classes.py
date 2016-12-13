@@ -27,14 +27,14 @@ def getFiles(dirname):
 files = getFiles('formated')
 print(files)
 stock = Stock()
-enterCodes = []
+l1 = []
 i = 1
 l = len(files)
 for f in files:
     print('{2}/{1}determine {0}'.format(f, l, i))
     stock.load(f)
-    if stock.canBeEnter():
-        enterCodes.extend([stock.code])
+    if stock.isFirstTurningByMACD():
+        l1.extend([stock.code])
     i += 1
 
-print(enterCodes)
+print(l1)

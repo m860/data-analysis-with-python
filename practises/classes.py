@@ -127,7 +127,23 @@ class Stock:
         # macd>0 说明是多头
         # diffv>0 说明还在上升期
         # volume>0 说明没有停牌
-        if lastest['macd'] >= 0 and lastest['diffv'] >= 0 and lastest['volume']>0:
+        if lastest['macd'] >= 0 and lastest['diffv'] >= 0 and lastest['volume'] > 0:
+            return True
+        return False
+
+    def isFirstTurningByMACD(self):
+        l = len(self.items)
+        if l < 2:
+            return False
+        if self.items[-2]['macd'] <= 0 and self.items[-1]['macd'] > 0 and self.items[-1]['volume'] > 0:
+            return True
+        return False
+
+    def blocked(self):
+        l = len(self.items)
+        if l < 2:
+            return True
+        if self.items[-1]['close'] == self.items[-1]['open']:
             return True
         return False
 
