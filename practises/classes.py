@@ -120,7 +120,7 @@ class Stock:
 
     def canBeEnter(self):
         lastest = self.items[-1]
-        if lastest['macd'] >= 0:
+        if lastest['macd'] >= 0 and lastest['diffv'] >= 1:
             return True
         return False
 
