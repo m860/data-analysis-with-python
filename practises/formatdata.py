@@ -19,6 +19,9 @@ def getName(filepath):
 
 
 files = getFiles('original')
+l = len(files)
+i = 0
 for p in files:
-    print('formating {0}'.format(p))
+    print('{1}/{2} formating {0}'.format(p, i, l))
     format(p, os.path.join('formated', getName(p) + '.json'))
+    i += 1
