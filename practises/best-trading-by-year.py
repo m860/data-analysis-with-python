@@ -109,9 +109,13 @@ def run(begindate=date(2016, 1, 1), enddate=date(2017, 1, 1)):
         i += 1
 
     sr = sorted(result, key=lambda d: (d['tradingTimes'], d['amount']), reverse=True)
-    
-    # save to file
-    with open('output/{}.json'.format(begindate.year),'w+') as f:
-        json.dump(sr,f)
 
-run(begindate=date(2015,1,1),enddate=date(2016,1,1))
+    # save to file
+    with open('output/{}.json'.format(begindate.year), 'w+') as f:
+        json.dump(sr, f)
+
+
+run()
+run(begindate=date(2015, 1, 1), enddate=date(2016, 1, 1))
+run(begindate=date(2014, 1, 1), enddate=date(2015, 1, 1))
+run(begindate=date(2013, 1, 1), enddate=date(2014, 1, 1))
