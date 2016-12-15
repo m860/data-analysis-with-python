@@ -119,7 +119,6 @@ def curmacd(items):
 def getLatestPrice():
     pass
 
-
 class Stock:
     def _determineItems(self):
         if not self.items:
@@ -133,9 +132,10 @@ class Stock:
     def load(self, path):
         self.path = path
         self.code = self.getCode(path)
+
         with open(path, 'r') as f:
             self.items = json.load(f)
-        pass
+            self.len=len(self.items)
 
     def save(self):
         with open(self.path, 'w+') as f:
