@@ -50,23 +50,23 @@ def format(fpath, tpath):
         if i < 4:
             items[i]['ma5'] = 0
         else:
-            items[i]['ma5'] = np.mean(closes[i - 4:i+1])
+            items[i]['ma5'] = np.mean(closes[i - 4:i + 1])
         if i < 9:
             items[i]['ma10'] = 0
         else:
-            items[i]['ma10'] = np.mean(closes[i - 9:i+1])
+            items[i]['ma10'] = np.mean(closes[i - 9:i + 1])
         if i < 19:
             items[i]['ma20'] = 0
         else:
-            items[i]['ma20'] = np.mean(closes[i - 19:i+1])
+            items[i]['ma20'] = np.mean(closes[i - 19:i + 1])
         if i < 29:
             items[i]['ma30'] = 0
         else:
-            items[i]['ma30'] = np.mean(closes[i - 29:i+1])
+            items[i]['ma30'] = np.mean(closes[i - 29:i + 1])
         if i < 59:
             items[i]['ma60'] = 0
         else:
-            items[i]['ma60'] = np.mean(closes[i - 59:i+1])
+            items[i]['ma60'] = np.mean(closes[i - 59:i + 1])
         items[i]['ema5'] = ema5[i]
         items[i]['ema10'] = ema10[i]
         items[i]['ema12'] = ema12[i]
@@ -109,9 +109,9 @@ def curmacd(items):
     curema12 = curema(items[-1], items[-2], 12)
     curema26 = curema(items[-1], items[-2], 26)
     curdiff = curema12 - curema26
-    alldiff=[d['diff'] for d in items[:-1]]
+    alldiff = [d['diff'] for d in items[:-1]]
     alldiff.extend([curdiff])
-    curdea = ema(np.array(alldiff),9)[-1]
+    curdea = ema(np.array(alldiff), 9)[-1]
     curosc = curdiff - curdea
     return (curosc * 2, curdiff, curdea)
 
@@ -157,11 +157,19 @@ class Stock:
             return True
         return False
 
-    def isFirstTurningByMACD(self):
+    def isFirstTurningByMACD(self, item=None, previtem=None):
         l = len(self.items)
-        if l < 2:
-            return False
-        if self.items[-2]['macd'] <= 0 and self.items[-1]['macd'] > 0 and self.items[-1]['volume'] > 0:
+        if item == None:
+            if l < 1:
+                return False
+            else:
+                item = self.items[-1]
+        if previtem == None:
+            if l < 2:
+                return False
+            else:
+                previtem = self.items[-2]
+        if previtem['macd'] <= 0 and item['macd'] > 0 and item['volume'] > 0:
             return True
         return False
 
