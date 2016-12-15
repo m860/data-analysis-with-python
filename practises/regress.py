@@ -114,4 +114,4 @@ def run(begindate=date(2016, 1, 1), enddate=date(2017, 1, 1)):
     with open('output/{}.json'.format(begindate.year),'w+') as f:
         json.dump(sr,f)
 
-run(begindate=date(2015,1,1),enddate=date(2016,1,1))
+run()
