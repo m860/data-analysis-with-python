@@ -103,8 +103,8 @@ def run(inCase, outCase=outCase1, begindate=date(2016, 1, 1), enddate=date(2016,
                     amount += repository * outPrice
                     percent = ((outPrice - inPos['close']) / inPos['close']) * 100
                     repository = 0
-                    print ('%s out : %s (%s%%) , %-5s , %s' % (curdate, outPrice,percent, amount,
-                                                          curitem['odate'] - inPos['odate']))
+                    print ('%s out : %s (%s%%) , %-5s , %s' % (curdate, outPrice, percent, amount,
+                                                               curitem['odate'] - inPos['odate']))
                     outPos = curitem
                 continue
             if inCase(matches, outPos, inPos):
@@ -121,8 +121,96 @@ def run(inCase, outCase=outCase1, begindate=date(2016, 1, 1), enddate=date(2016,
     print('amount = %s , %s%%' % (amount, ((amount - 10000) / 10000) * 100))
 
 
-# run(matchCase1, rate=0.03, begindate=date(2013, 1, 1))
-# run(inCase1, rate=0.03, begindate=date(2016, 1, 1))
-# run(matchCase2, rate=0.05, begindate=date(2013, 1, 1))
-run(inCase2, begindate=date(2016, 1, 1))
-run(inCase2, outCase2, begindate=date(2016, 1, 1))
+def raising(items):
+    if items[-1]['macd'] >= items[-2]['macd'] >= items[-3]['macd']:
+        return True
+    return False
+
+
+def overThreshold(items, value=-0.2):
+    if items[-1]['macd'] >= value:
+        return True
+    return False
+
+
+def getLatestReverseMACDDuration(items):
+    i = 0
+    # 0:init,1:start,2:stop
+    status = 0
+    for item in reversed(items):
+        if status == 0:
+            if item['macd'] <= 0:
+                status = 1
+                i += 1
+        else:
+            if item['macd'] <= 0:
+                i += 1
+            else:
+                break
+    return i
+
+
+def getLatestReverseMACDDiffRate(items):
+    closes = []
+    # 0:init,1:start,2:stop
+    status = 0
+    for item in reversed(items):
+        if status == 0:
+            if item['macd'] <= 0:
+                status = 1
+                closes.extend([item['close']])
+        else:
+            if item['macd'] <= 0:
+                closes.extend([item['close']])
+            else:
+                break
+    minc = min(closes)
+    maxc = max(closes)
+    diff = maxc - minc
+    return diff / minc
+
+
+def getLatestMACDDuration(items):
+    i = 0
+    # 0:init,1:start
+    status = 0
+    for item in reversed(items):
+        if status == 0:
+            if item['macd'] > 0:
+                status = 1
+                i += 1
+            else:
+                break
+        else:
+            if item['macd'] <= 0:
+                break
+            else:
+                i += 1
+    return i
+
+
+# filter 2016/12/12,cal range before 2016/12/12 begin is 2016/12/09
+def run():
+    files = getFiles()
+    filelen = len(files)
+    i = 0
+    stock = Stock()
+    result = []
+    for fp in files:
+        sys.stdout.write('\r%s/%s' % (i, filelen))
+        stock.load(fp)
+        stock.items = stock.items[-100:]
+        if overThreshold(stock.items) and raising(stock.items):
+            data = {
+                'code': stock.code,
+                'diffRate': getLatestReverseMACDDiffRate(stock.items),
+                'macdDuration': getLatestMACDDuration(stock.items)
+            }
+            result.extend([data])
+        i += 1
+    sr = sorted(result, key=lambda d: (d['macdDuration'], -d['diffRate']))
+    with open('output/filter1.json', 'w+') as f:
+        json.dump(sr, f)
+
+
+run()

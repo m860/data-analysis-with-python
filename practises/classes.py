@@ -2,6 +2,7 @@
 import numpy as np
 import json
 import os
+import threading
 
 
 def macd(ndarr):
@@ -45,6 +46,10 @@ def format(fpath, tpath):
     _macd, diff, dea = macd(closes)
     diffv = [diff[i] - diff[i - 1] for i in range(diff.size) if i > 0]
     diffv.insert(0, 0)
+    deav = [dea[i] - dea[i - 1] for i in range(dea.size) if i > 0]
+    deav.insert(0, 0)
+    macdv = [_macd[i] - _macd[i - 1] for i in range(_macd.size) if i > 0]
+    macdv.insert(0, 0)
     # cal mean
     for i in range(l):
         if i < 4:
@@ -77,6 +82,8 @@ def format(fpath, tpath):
         items[i]['diff'] = diff[i]
         items[i]['dea'] = dea[i]
         items[i]['diffv'] = diffv[i]
+        items[i]['deav'] = deav[i]
+        items[i]['macdv'] = macdv[i]
 
     with open(tpath, 'w+') as f:
         json.dump(items, f)
@@ -119,6 +126,7 @@ def curmacd(items):
 def getLatestPrice():
     pass
 
+
 class Stock:
     def _determineItems(self):
         if not self.items:
@@ -135,7 +143,7 @@ class Stock:
 
         with open(path, 'r') as f:
             self.items = json.load(f)
-            self.len=len(self.items)
+            self.len = len(self.items)
 
     def save(self):
         with open(self.path, 'w+') as f:
@@ -214,3 +222,16 @@ class Stock:
             self.items[-1]['ema60'] = curema(self.items[-1], self.items[-2], 60)
             self.items[-1]['macd'], self.items[-1]['diff'], self.items[-1]['dea'] = curmacd(self.items)
             self.items[-1]['diffv'] = self.items[-1]['diff'] - self.items[-2]['diff']
+
+
+class ThreadFormatStock(threading.Thread):
+    def __init__(self, queue):
+        threading.Thread.__init__(self)
+        self.queue = queue
+
+    def run(self):
+        while True:
+            filepath, jsonpath, index, total = self.queue.get()
+            print('{}/{} formating {}'.format(index, total, filepath))
+            format(filepath, jsonpath)
+            self.queue.task_done()
