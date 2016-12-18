@@ -122,13 +122,13 @@ def run(inCase, outCase=outCase1, begindate=date(2016, 1, 1), enddate=date(2016,
 
 
 def raising(items):
-    if items[-1]['macd'] >= items[-2]['macd'] >= items[-3]['macd']:
+    if len(items) >= 3 and items[-1]['macd'] >= items[-2]['macd'] >= items[-3]['macd']:
         return True
     return False
 
 
 def overThreshold(items, value=-0.2):
-    if items[-1]['macd'] >= value:
+    if len(items) > 0 and items[-1]['macd'] >= value:
         return True
     return False
 
@@ -190,7 +190,7 @@ def getLatestMACDDuration(items):
 
 
 # filter 2016/12/12,cal range before 2016/12/12 begin is 2016/12/09
-def run():
+def run(targetdate=date(2016, 12, 12)):
     files = getFiles()
     filelen = len(files)
     i = 0
@@ -199,18 +199,23 @@ def run():
     for fp in files:
         sys.stdout.write('\r%s/%s' % (i, filelen))
         stock.load(fp)
-        stock.items = stock.items[-100:]
-        if overThreshold(stock.items) and raising(stock.items):
-            data = {
-                'code': stock.code,
-                'diffRate': getLatestReverseMACDDiffRate(stock.items),
-                'macdDuration': getLatestMACDDuration(stock.items)
-            }
-            result.extend([data])
+        stock.items = [d for d in stock.items if
+                       (targetdate + timedelta(days=-365)) <= parse(d['date']).date() <= targetdate]
+
+        if len(stock.items) > 0 and parse(stock.items[-1]['date']).date() == targetdate and stock.items[-1][
+            'volume'] > 0:
+            if overThreshold(stock.items) and raising(stock.items):
+                data = {
+                    'code': stock.code,
+                    'diffRate': getLatestReverseMACDDiffRate(stock.items),
+                    'macdDuration': getLatestMACDDuration(stock.items)
+                }
+                if data['diffRate'] >= 0.2 and data['macdDuration'] <= 0:
+                    result.extend([data])
         i += 1
     sr = sorted(result, key=lambda d: (d['macdDuration'], -d['diffRate']))
-    with open('output/filter1.json', 'w+') as f:
+    with open('output/filter1_{}.json'.format(targetdate), 'w+') as f:
         json.dump(sr, f)
 
 
-run()
+run(targetdate=date(2016, 12, 16))

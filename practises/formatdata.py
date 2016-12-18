@@ -56,5 +56,6 @@ def run():
         format(p, os.path.join('formated', getName(p) + '.json'))
         i += 1
 
-# run()
-format('original/SZ#002673.txt','formated/SZ#002673.json')
+run()
+# format('original/SZ#002673.txt','formated/SZ#002673.json')
+# run_async()
