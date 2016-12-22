@@ -26,27 +26,25 @@ def getSymbols():
         symbols = [i.replace('\n', '') for i in f.readlines()]
 
 
-def saveBrokenPoint(page, pageSize):
-    data = {
-        'page': page,
-        'pageSize': pageSize
-    }
+def saveBrokenPoint(data, filename='sync_symbols'):
     dirname = 'temp'
     if not os.path.exists(dirname):
         os.mkdir(dirname)
-    filepath = '{}/sync_symbols.broken'.format(dirname)
+    filepath = '{}/{}.broken'.format(dirname, filename)
     with open(filepath, 'w+') as f:
         json.dump(data, f)
 
 
-def getBrokenPoint(filepath='temp/sync_symbols.broken'):
+def getBrokenPoint(filename='sync_symbols'):
+    filepath = 'temp/{}.broken'.format(filename)
     if not os.path.exists(filepath):
         return None
     with open(filepath) as f:
         return json.load(f)
 
 
-def removeBrokenPoint(filepath='temp/sync_symbols.broken'):
+def removeBrokenPoint(filename='sync_symbols'):
+    filepath = 'temp/{}.broken'.format(filename)
     if os.path.exists(filepath):
         os.remove(filepath)
 
@@ -57,33 +55,50 @@ def downloadPrice(symbol):
         os.mkdir(dir)
     savepath = '{}/{}.csv'.format(dir, symbol)
     url = 'https://xueqiu.com/S/{}/historical.csv'.format(symbol)
-    sys.stdout.write('download %s' % (url))
+    sys.stdout.write('downloading %s ' % (url))
+    # print('downloading %s' % url)
     res = requests.get(url, headers=HEADERS)
     if res.status_code == 200:
         # csv=pd.read_csv(res.con)
         with open(savepath, 'w+') as f:
             f.write(res.content)
-    return savepath
+    else:
+        res.raise_for_status()
+    sys.stdout.write(' done\n')
+    # print(' done')
+    # return savepath
 
 
-def syncPrices():
+def syncPrices(brokenPoint=None):
+    # brokenFilename = 'prices'
     getSymbols()
     l = len(symbols)
     i = 1
-    for s in symbols:
+    start = 0
+    if not brokenPoint == None:
+        start = brokenPoint['index']
+        i = start
+    for s in symbols[start:]:
         sys.stdout.write('%s/%s ' % (i, l))
-        downloadPrice(s)
-        i += 1
+        # print('%s/%s' % (i, l))
+        try:
+            downloadPrice(s)
+            i += 1
+        except:
+            print(sys.exc_info())
+            syncPrices({
+                'index': i
+            })
 
 
 def syncSymbols():
-    global symbols, json
+    global symbols
     page = 1
     pageSize = 30
     brokenPoint = getBrokenPoint()
     if not brokenPoint == None:
-        page = int(brokenPoint['page'])
-        pageSize = int(brokenPoint['pageSize'])
+        page = brokenPoint['page']
+        pageSize = brokenPoint['pageSize']
         removeBrokenPoint()
 
     url = "https://xueqiu.com/stock/cata/stocklist.json?page={}&size={}&order=desc&orderby=percent&type=11%2C12&_={}"
@@ -99,13 +114,20 @@ def syncSymbols():
                 symbols = np.append(symbols, [d['symbol'] for d in json['stocks']])
                 page += 1
             else:
-                saveBrokenPoint(page, pageSize)
+                print ('\n%s' % (res.status_code))
+                saveBrokenPoint({
+                    'page': page,
+                    'pageSize': pageSize
+                })
                 time.sleep(5)
                 syncSymbols()
 
         except:
-            print (sys.exc_info())
-            saveBrokenPoint(page, pageSize)
+            print ('\n%s' % sys.exc_info())
+            saveBrokenPoint({
+                'page': page,
+                'pageSize': pageSize
+            })
             time.sleep(5)
             syncSymbols()
     with open(symbolsPath, 'w+') as f:
