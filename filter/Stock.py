@@ -54,7 +54,7 @@ class Stock:
                           'volume': np.float64(d[6])
                       } for d in pd.read_csv(csvpath).as_matrix()]
         closes = np.array([d['close'] for d in self.datas])
-        self.macd, self.divv, self.dea = _macd(closes)
+        self.macd, self.div, self.dea = _macd(closes)
         self.em5 = _ma(closes, 5)
         self.em10 = _ma(closes, 10)
         self.em20 = _ma(closes, 20)

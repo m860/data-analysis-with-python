@@ -25,28 +25,28 @@ def getSymbols():
     with open(symbolsPath) as f:
         symbols = [i.replace('\n', '') for i in f.readlines()]
 
-
-def saveBrokenPoint(data, filename='sync_symbols'):
-    dirname = 'temp'
-    if not os.path.exists(dirname):
-        os.mkdir(dirname)
-    filepath = '{}/{}.broken'.format(dirname, filename)
-    with open(filepath, 'w+') as f:
-        json.dump(data, f)
-
-
-def getBrokenPoint(filename='sync_symbols'):
-    filepath = 'temp/{}.broken'.format(filename)
-    if not os.path.exists(filepath):
-        return None
-    with open(filepath) as f:
-        return json.load(f)
-
-
-def removeBrokenPoint(filename='sync_symbols'):
-    filepath = 'temp/{}.broken'.format(filename)
-    if os.path.exists(filepath):
-        os.remove(filepath)
+#
+# def saveBrokenPoint(data, filename='sync_symbols'):
+#     dirname = 'temp'
+#     if not os.path.exists(dirname):
+#         os.mkdir(dirname)
+#     filepath = '{}/{}.broken'.format(dirname, filename)
+#     with open(filepath, 'w+') as f:
+#         json.dump(data, f)
+#
+#
+# def getBrokenPoint(filename='sync_symbols'):
+#     filepath = 'temp/{}.broken'.format(filename)
+#     if not os.path.exists(filepath):
+#         return None
+#     with open(filepath) as f:
+#         return json.load(f)
+#
+#
+# def removeBrokenPoint(filename='sync_symbols'):
+#     filepath = 'temp/{}.broken'.format(filename)
+#     if os.path.exists(filepath):
+#         os.remove(filepath)
 
 
 def downloadPrice(symbol):
@@ -91,15 +91,15 @@ def syncPrices(brokenPoint=None):
             })
 
 
-def syncSymbols():
+def syncSymbols(brokenPoint=None):
     global symbols
     page = 1
     pageSize = 30
-    brokenPoint = getBrokenPoint()
+    # brokenPoint = getBrokenPoint()
     if not brokenPoint == None:
         page = brokenPoint['page']
         pageSize = brokenPoint['pageSize']
-        removeBrokenPoint()
+        # removeBrokenPoint()
 
     url = "https://xueqiu.com/stock/cata/stocklist.json?page={}&size={}&order=desc&orderby=percent&type=11%2C12&_={}"
     while True:
@@ -115,21 +115,27 @@ def syncSymbols():
                 page += 1
             else:
                 print ('\n%s' % (res.status_code))
-                saveBrokenPoint({
-                    'page': page,
-                    'pageSize': pageSize
+                # saveBrokenPoint({
+                #     'page': page,
+                #     'pageSize': pageSize
+                # })
+                # time.sleep(5)
+                syncSymbols({
+                    'page':page,
+                    'pageSize':pageSize
                 })
-                time.sleep(5)
-                syncSymbols()
 
         except:
             print ('\n%s' % sys.exc_info())
-            saveBrokenPoint({
-                'page': page,
-                'pageSize': pageSize
-            })
-            time.sleep(5)
-            syncSymbols()
+            # saveBrokenPoint({
+            #     'page': page,
+            #     'pageSize': pageSize
+            # })
+            # time.sleep(5)
+            syncSymbols({
+                    'page':page,
+                    'pageSize':pageSize
+                })
     with open(symbolsPath, 'w+') as f:
         f.write('\n'.join(symbols))
 
