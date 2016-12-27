@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import numpy as np
 import pandas as pd
 import os
@@ -43,7 +44,7 @@ def splicsvpath(csvpath):
 
 
 class Stock:
-    def __init__(self, csvpath):
+    def __init__(self, csvpath, cal=True):
         self.symbol, self.code = splicsvpath(csvpath)
         self.datas = [{
                           'date': parse(d[1]).date(),
@@ -53,17 +54,18 @@ class Stock:
                           'close': np.float64(d[5]),
                           'volume': np.float64(d[6])
                       } for d in pd.read_csv(csvpath).as_matrix()]
-        closes = np.array([d['close'] for d in self.datas])
-        self.macd, self.div, self.dea = _macd(closes)
-        self.em5 = _ma(closes, 5)
-        self.em10 = _ma(closes, 10)
-        self.em20 = _ma(closes, 20)
-        self.em30 = _ma(closes, 30)
-        self.em60 = _ma(closes, 60)
-        self.ema5 = _ema(closes, 5)
-        self.ema10 = _ema(closes, 10)
-        self.ema20 = _ema(closes, 20)
-        self.ema60 = _ema(closes, 60)
+        if cal:
+            closes = np.array([d['close'] for d in self.datas])
+            self.macd, self.div, self.dea = _macd(closes)
+            self.em5 = _ma(closes, 5)
+            self.em10 = _ma(closes, 10)
+            self.em20 = _ma(closes, 20)
+            self.em30 = _ma(closes, 30)
+            self.em60 = _ma(closes, 60)
+            self.ema5 = _ema(closes, 5)
+            self.ema10 = _ema(closes, 10)
+            self.ema20 = _ema(closes, 20)
+            self.ema60 = _ema(closes, 60)
 
     def length(self):
         return len(self.datas)
