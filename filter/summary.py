@@ -33,7 +33,7 @@ def getFiles(symbols):
     return result
 
 
-def filter(curDate=datetime.datetime.today().date()):
+def filter(curDate=datetime.datetime.today().date()+datetime.timedelta(days=-1)):
     result = {
         'up': [],
         'down': []
@@ -71,7 +71,7 @@ def filter(curDate=datetime.datetime.today().date()):
         json.dump(result, f)
 
 
-def generateSummary(curDate=datetime.datetime.today().date()):
+def generateSummary(curDate=datetime.datetime.today().date()+datetime.timedelta(days=-1)):
     data = getUpDown(curDate)
     if not data == None:
         with open('output/summary_{:%Y-%m-%d}'.format(curDate), 'w+') as f:
@@ -84,8 +84,8 @@ def generateSummary(curDate=datetime.datetime.today().date()):
                 f.write(temp.format(curDate, lup, min(upp), max(upp), ldown, min(downp), max(downp)))
 
 
-def getUpDown(curDate=datetime.datetime.today().date()):
-    filename = 'output/filter_up_down_{:%Y-%m-%d}.json'.format(curDate)
+def getUpDown(curDate=datetime.datetime.today().date()+datetime.timedelta(days=-1)):
+    filename = 'output/up_down_{:%Y-%m-%d}.json'.format(curDate)
     with open(filename) as f:
         return json.load(f)
     return None
@@ -120,5 +120,5 @@ def getUpDown(curDate=datetime.datetime.today().date()):
 #     return None
 
 
-filter()
+# filter()
 generateSummary()
