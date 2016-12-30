@@ -120,5 +120,5 @@ def getUpDown(curDate=datetime.datetime.today().date()+datetime.timedelta(days=-
 #     return None
 
 
-# filter()
+filter()
 generateSummary()

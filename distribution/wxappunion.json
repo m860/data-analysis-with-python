@@ -1,0 +1,21 @@
+{
+  "userAgents":[
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/601.7.7 (KHTML, like Gecko) Version/9.1.2 Safari/601.7.7",
+    "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
+    "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729)"
+  ],
+  "wxappunion":{
+    "host":"http://www.wxapp-union.com/",
+    "login":"http://www.wxapp-union.com/member.php?mod=logging&action=login&loginsubmit=yes&frommessage&loginhash=LAPgc&inajax=1",
+    "article":"http://www.wxapp-union.com/forum.php?mod=viewthread&tid={}",
+    "comment":"",
+    "users":[{
+      "id":"快乐小王子",
+      "pwd":"abcd@123"
+    },{
+      "id":"快乐小公主",
+      "pwd":"abcd@123"
+    }]
+  }
+}
