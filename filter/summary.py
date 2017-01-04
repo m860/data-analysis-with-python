@@ -33,7 +33,7 @@ def getFiles(symbols):
     return result
 
 
-def filter(curDate=datetime.datetime.today().date()+datetime.timedelta(days=-1)):
+def filter(curDate=datetime.datetime.today().date() + datetime.timedelta(days=-1)):
     result = {
         'up': [],
         'down': []
@@ -70,8 +70,10 @@ def filter(curDate=datetime.datetime.today().date()+datetime.timedelta(days=-1))
     with open('output/up_down_{:%Y-%m-%d}.json'.format(curDate), 'w+') as f:
         json.dump(result, f)
 
+    generateSummary(curDate)
 
-def generateSummary(curDate=datetime.datetime.today().date()+datetime.timedelta(days=-1)):
+
+def generateSummary(curDate=datetime.datetime.today().date() + datetime.timedelta(days=-1)):
     data = getUpDown(curDate)
     if not data == None:
         with open('output/summary_{:%Y-%m-%d}'.format(curDate), 'w+') as f:
@@ -84,7 +86,7 @@ def generateSummary(curDate=datetime.datetime.today().date()+datetime.timedelta(
                 f.write(temp.format(curDate, lup, min(upp), max(upp), ldown, min(downp), max(downp)))
 
 
-def getUpDown(curDate=datetime.datetime.today().date()+datetime.timedelta(days=-1)):
+def getUpDown(curDate=datetime.datetime.today().date() + datetime.timedelta(days=-1)):
     filename = 'output/up_down_{:%Y-%m-%d}.json'.format(curDate)
     with open(filename) as f:
         return json.load(f)
@@ -120,5 +122,5 @@ def getUpDown(curDate=datetime.datetime.today().date()+datetime.timedelta(days=-
 #     return None
 
 
-filter()
-generateSummary()
+filter(datetime.date(2016, 12, 29))
+filter(datetime.date(2016, 12, 30))
