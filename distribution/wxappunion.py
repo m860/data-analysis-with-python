@@ -138,5 +138,5 @@ def fetchAllArticleTitle(breakLimit=20):
 
 
 connect()
-# comment(1605)
-fetchAllArticleTitle()
+comment(1605)
+# fetchAllArticleTitle()
