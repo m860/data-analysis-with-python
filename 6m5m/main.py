@@ -12,6 +12,7 @@ import sys
 
 
 def buildFormData():
+    print('begin build form data ...')
     loginUrl = "http://www.6m5m.com/login.html"
     res = requests.get(loginUrl, headers={
         'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/601.7.7 (KHTML, like Gecko) Version/9.1.2 Safari/601.7.7"
@@ -27,6 +28,7 @@ def buildFormData():
         return 'formhash={}&hdn_refer={}&handlekey={}&txt_account={}&txt_password={}&pwd_password={}'.format(
             formhash, hdn_refer, handlekey, txt_account, txt_password, pwd_password
         )
+    print('build form data fail')
     return None
 
 
